@@ -5,8 +5,7 @@ from menu import Menu
 
 class UnitTests(unittest.TestCase):
     def test_input_check(self):
-        with self.assertRaises(TypeError):
-            Menu.check_if_int("a")
+        self.assertFalse(Menu.is_convertible_to_int("a"))
 
 
 
