@@ -1,11 +1,12 @@
 from examples.message import Messages
+from examples.shared_memory import SharedMemory
 
 
 class Menu:
     def __init__(self):
         self.simulations = {
-            1: Messages()
-
+            1: Messages(),
+            2: SharedMemory()
         }
     @staticmethod
     def is_convertible_to_int(value):
