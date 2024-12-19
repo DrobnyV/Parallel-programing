@@ -1,59 +1,93 @@
 import threading
 import time
-from queue import Queue
-
+from abc import ABC, abstractmethod
+import queue
 from color import Color
-from examples.simulation import Simulation
+
+
+class Simulation(ABC):
+    @abstractmethod
+    def run(self):
+        pass
+
+    @abstractmethod
+    def show_code(self):
+        pass
 
 
 class Messages(Simulation):
+    def __init__(self):
+        self.message_queue = queue.Queue()
+
+    def producer(self):
+        for i in range(5):
+            time.sleep(2)
+            self.message_queue.put(f"Message {i}")
+            print(f"{Color.GREEN}Producer: Sent message {i}{Color.RESET}")
+            print(
+                f"{Color.BLUE}Blueprint: Imagine the producer as a chef sending dishes to a kitchen window.{Color.RESET}")
+
+    def consumer(self):
+        for i in range(5):
+            message = self.message_queue.get()
+            time.sleep(2)
+            print(f"{Color.RED}Consumer: Received {message}{Color.RESET}")
+            print(
+                f"{Color.BLUE}Blueprint: The consumer is like a waiter picking up dishes from the window.{Color.RESET}")
+            self.message_queue.task_done()
+
     def run(self):
-        def producer(queue):
-            for i in range(5):
-                queue.put(f"Zpráva {i}")
-                print(f"Producent odeslal: Zpráva {i}")
-                time.sleep(1)
+        print(
+            f"{Color.BLUE}Blueprint: This simulation demonstrates message passing between threads using a queue.{Color.RESET}")
+        threads = [
+            threading.Thread(target=self.producer),
+            threading.Thread(target=self.consumer)
+        ]
 
-        def consumer(queue):
-            while not queue.empty() or threading.current_thread().is_alive():
-                if not queue.empty():
-                    msg = queue.get()
-                    print(f"Konzument přijal: {msg}")
+        for thread in threads:
+            thread.start()
 
-        queue = Queue()
-        producer_thread = threading.Thread(target=producer, args=(queue,))
-        consumer_thread = threading.Thread(target=consumer, args=(queue,))
-        consumer_thread.do_run = True
-
-        producer_thread.start()
-        consumer_thread.start()
-        producer_thread.join()
-        consumer_thread.do_run = False
-        consumer_thread.join()
+        for thread in threads:
+            thread.join()
 
     def show_code(self):
-        print(f"""
-        {Color.GREEN}# Simulation of messaging{Color.RESET}
-                def producer(queue):
-            for i in range(5):
-                queue.put("Zpráva" + str(i))
-                print("Producent odeslal: Zpráva " + str(i))
-                time.sleep(1)
+        print("""
+        import threading
+        import time
+        import queue
 
-        def consumer(queue):
-            while not queue.empty() or threading.current_thread().is_alive():
-                if not queue.empty():
-                    msg = queue.get()
-                    print(f"Konzument přijal: "+ str(msg))
-
-        queue = Queue()
-        producer_thread = threading.Thread(target=producer, args=(queue,))
-        consumer_thread = threading.Thread(target=consumer, args=(queue,))
-        consumer_thread.do_run = True
-
-        producer_thread.start()
-        consumer_thread.start()
-        producer_thread.join()
-        consumer_thread.do_run = False
-        consumer_thread.join()
+        class Messages(Simulation):
+            def __init__(self):
+                self.message_queue = queue.Queue()
+        
+            def producer(self):
+                for i in range(5):
+                    time.sleep(2)
+                    self.message_queue.put(f"Message {i}")
+                    print(f"{Color.GREEN}Producer: Sent message {i}{Color.RESET}")
+                    print(
+                        f"{Color.BLUE}Blueprint: Imagine the producer as a chef sending dishes to a kitchen window.{Color.RESET}")
+        
+            def consumer(self):
+                for i in range(5):
+                    message = self.message_queue.get()
+                    time.sleep(2) 
+                    print(f"{Color.RED}Consumer: Received {message}{Color.RESET}")
+                    print(
+                        f"{Color.BLUE}Blueprint: The consumer is like a waiter picking up dishes from the window.{Color.RESET}")
+                    self.message_queue.task_done()
+        
+            def run(self):
+                print(
+                    f"{Color.BLUE}Blueprint: This simulation demonstrates message passing between threads using a queue.{Color.RESET}")
+                threads = [
+                    threading.Thread(target=self.producer),
+                    threading.Thread(target=self.consumer)
+                ]
+        
+                for thread in threads:
+                    thread.start()
+        
+                for thread in threads:
+                    thread.join()
         """)
