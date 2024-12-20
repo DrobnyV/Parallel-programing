@@ -1,65 +1,67 @@
+import threading
 import unittest
-from unittest.mock import patch
-from io import StringIO
+from unittest.mock import patch, MagicMock
 
 from UI.interactive_menu import InteractiveMenu
-from color import Color
 from examples.message import Messages
 from examples.shared_memory import SharedMemory
 
+from config.config import Config
 
-class UnitTests(unittest.TestCase):
+
+class TestMessages(unittest.TestCase):
+    def setUp(self):
+        self.messages = Messages()
+        self.messages.config = Config()
+        self.messages.config.data = {"message_count": 3, "delay_between_messages": 1}
+
+    def test_producer(self):
+        self.messages.producer()
+        self.assertEqual(self.messages.message_queue.qsize(), 3)
+
+    def test_consumer(self):
+        for i in range(3):
+            self.messages.message_queue.put(f"Message {i}")
+        self.messages.consumer()
+        self.assertTrue(self.messages.message_queue.empty())
+
+
+class TestSharedMemory(unittest.TestCase):
+    def setUp(self):
+        self.shared_memory = SharedMemory()
+        self.shared_memory.config = Config()
+        self.shared_memory.config.data = {"max_threads": 2, "delay_between_messages": 0}
+
+    def test_counter_increment(self):
+        threads = [
+            threading.Thread(target=self.shared_memory.increment, args=(f"Thread-{i}",))
+            for i in range(2)
+        ]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        self.assertEqual(self.shared_memory.counter, 200000)
+
+
+class TestInteractiveMenu(unittest.TestCase):
     def setUp(self):
         self.menu = InteractiveMenu()
-        self.messages_sim = Messages()
-        self.shared_mem_sim = SharedMemory()
 
-    @patch('sys.stdout', new_callable=StringIO)
-    @patch('builtins.input',
-           side_effect=['messages run', 'messages show', 'shared_memory run', 'shared_memory show', 'EOF'])
-    def test_menu_commands(self, mock_input, mock_stdout):
-        self.menu.cmdloop()
-        output = mock_stdout.getvalue()
+    def test_run_messages_simulation(self):
+        with patch.object(Messages, 'run', return_value=None) as mock_run:
+            self.menu.do_messages('run')
+            mock_run.assert_called_once()
 
-        # Check for specific outputs from simulations
-        self.assertIn("Producer: Sent message", output)  # Check if messages simulation ran
-        self.assertIn("def producer(self):", output)  # Check if messages simulation code was shown
-        self.assertIn("Thread-1: Counter is now", output)  # Check if shared memory simulation ran
-        self.assertIn("def increment(self, thread_name):", output)  # Check if shared memory code was shown
+    def test_show_shared_memory_code(self):
+        with patch.object(SharedMemory, 'show_code', return_value=None) as mock_show_code:
+            self.menu.do_shared_memory('show')
+            mock_show_code.assert_called_once()
 
-    @patch('sys.stdout', new_callable=StringIO)
-    @patch('builtins.input', side_effect=['messages wrong', 'EOF'])
-    def test_invalid_command(self, mock_input, mock_stdout):
-        self.menu.cmdloop()
-        output = mock_stdout.getvalue()
-        self.assertIn("Invalid command. Use 'run' or 'show'.", output)
+    def test_config_set_and_get(self):
+        self.menu.do_config('test_key 42')
+        self.assertEqual(self.menu.config.get('test_key'), '42')
 
-    @patch('sys.stdout', new_callable=StringIO)
-    @patch('builtins.input', side_effect=['exit'])
-    def test_exit_command(self, mock_input, mock_stdout):
-        self.menu.cmdloop()
-        output = mock_stdout.getvalue()
-        self.assertIn("Exiting...", output)
-
-    def test_messages_simulation(self):
-        # Checks if the methods exist for the messages simulation
-        self.assertTrue(hasattr(self.messages_sim, 'producer'))
-        self.assertTrue(hasattr(self.messages_sim, 'consumer'))
-        self.messages_sim.run()  # This won't verify threading but ensures it runs without exceptions
-
-    def test_shared_memory_simulation(self):
-        # Here we test if the simulation runs to completion
-        self.shared_mem_sim.run()
-        # Since we can't directly test threading, we'll check if the counter ends up at least at some value
-        self.assertGreaterEqual(self.shared_mem_sim.counter, 100000)  # Assuming counter starts at 0 and increments
-
-    @patch('sys.stdout', new_callable=StringIO)
-    def test_color_codes(self, mock_stdout):
-        # Test if color codes are correctly defined
-        self.assertEqual(Color.RED, '\033[91m')
-        self.assertEqual(Color.GREEN, '\033[92m')
-        self.assertEqual(Color.BLUE, '\033[94m')
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
