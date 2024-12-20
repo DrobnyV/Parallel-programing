@@ -3,16 +3,7 @@ import time
 from abc import ABC, abstractmethod
 import queue
 from color import Color
-
-
-class Simulation(ABC):
-    @abstractmethod
-    def run(self):
-        pass
-
-    @abstractmethod
-    def show_code(self):
-        pass
+from examples.simulation import Simulation
 
 
 class Messages(Simulation):

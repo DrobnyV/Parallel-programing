@@ -2,15 +2,8 @@ import threading
 import time
 from abc import ABC, abstractmethod
 from color import Color
+from examples.simulation import Simulation
 
-class Simulation(ABC):
-    @abstractmethod
-    def run(self):
-        pass
-
-    @abstractmethod
-    def show_code(self):
-        pass
 
 class SharedMemory(Simulation):
     def __init__(self):
