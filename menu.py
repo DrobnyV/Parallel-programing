@@ -25,6 +25,8 @@ class Menu:
         while True:
             self.display()
             choice = input("Your choice: ")
+            if choice.lower() == 'q':  # Exit condition
+                break
             if Menu.is_convertible_to_int(choice):
                 choice = int(choice)
                 simulation = self.simulations.get(choice)
@@ -32,16 +34,18 @@ class Menu:
                     print("1: Show code ")
                     print("2: Run simulation")
                     subchoice = input("Your choice: ")
+                    if subchoice.lower() == 'q':  # Exit condition
+                        break
                     if Menu.is_convertible_to_int(subchoice):
                         subchoice = int(subchoice)
-                        Menu.is_convertible_to_int(subchoice)
                         if subchoice == 1:
                             simulation.show_code()
                         elif subchoice == 2:
                             simulation.run()
                         else:
                             print("Wrong choice!")
-                    else: print("Input must be integer")
+                    else:
+                        print("Input must be integer")
                 else:
                     print("Wrong choice!")
             else:
