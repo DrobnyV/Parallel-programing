@@ -5,6 +5,7 @@ from config.config import Config
 from examples.message import Messages
 from examples.shared_memory import SharedMemory
 from color import Color
+from examples.thread_synchronization import ThreadSynchronization
 
 class InteractiveMenu(cmd.Cmd):
     intro = f"Welcome to the Thread Simulation Menu. Type help or ? to list commands."
@@ -14,7 +15,8 @@ class InteractiveMenu(cmd.Cmd):
         super().__init__()
         self.simulations = {
             'messages': Messages(),
-            'shared_memory': SharedMemory()
+            'shared_memory': SharedMemory(),
+            'thread_synchronization': ThreadSynchronization()
         }
         self.config = Config()
         if not self.config.get('use_colors', True):
@@ -31,6 +33,10 @@ class InteractiveMenu(cmd.Cmd):
     def do_shared_memory(self, arg):
         'Run or show code for the Shared Memory simulation: shared_memory [run/show]'
         self._handle_command('shared_memory', arg)
+
+    def do_thread_synchronization(self, arg):
+        'Run or show code for the Thread Synchronization simulation: thread_synchronization [run/show]'
+        self._handle_command('thread_synchronization', arg)
 
     def _handle_command(self, simulation_name, arg):
         simulation = self.simulations.get(simulation_name)

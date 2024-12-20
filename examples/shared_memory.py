@@ -13,6 +13,7 @@ class SharedMemory(Simulation):
         self.lock = threading.Lock()
         self.config = Config()
         self.max_threads = self.config.get('max_threads', 10)
+        self.print_lock = threading.Lock()
 
     def increment(self, thread_name):
         for _ in range(100000):
@@ -20,11 +21,13 @@ class SharedMemory(Simulation):
                 self.counter += 1
             if _ % 10000 == 0:
                 time.sleep(self.config.get('delay_between_messages', 2))
-                print(f"{Color.GREEN}{thread_name}: Counter is now {self.counter}{Color.RESET}")
-                print(f"{Color.BLUE}Blueprint: Both threads are trying to add to the same bank account, but only one can do it at a time.{Color.RESET}")
+                with self.print_lock:
+                    print(f"{Color.GREEN}{thread_name}: Counter is now {self.counter}{Color.RESET}")
+                    print(f"{Color.BLUE}Blueprint: Every thread is trying to add to the same bank account, but only one can do it at a time.{Color.RESET}")
 
     def run(self):
-        print(f"{Color.BLUE}Blueprint: Here, we're showing how threads can safely share and modify memory using locks to avoid race conditions.{Color.RESET}")
+        with self.print_lock:
+            print(f"{Color.BLUE}Blueprint: Here, we're showing how threads can safely share and modify memory using locks to avoid race conditions.{Color.RESET}")
         threads = []
         for i in range(self.max_threads):
             t = threading.Thread(target=self.increment, args=(f"Thread-{i}",))
@@ -34,8 +37,9 @@ class SharedMemory(Simulation):
             t.join()
 
         time.sleep(self.config.get('delay_between_messages', 2))
-        print(f"{Color.RED}Final counter value: {self.counter}{Color.RESET}")
-        print(f"Expected count if no race condition: {self.max_threads*100000}")
+        with self.print_lock:
+            print(f"{Color.RED}Final counter value: {self.counter}{Color.RESET}")
+            print(f"Expected count if no race condition: {self.max_threads*100000}")
 
     def show_code(self):
         print("""

@@ -31,7 +31,9 @@ class Config:
             "message_count": 5,
             "delay_between_messages": 2,
             "max_threads": 10,
-            "use_colors": True
+            "use_colors": True,
+            "num_threads": 4,
+            "delay_between_stages": 1
         }
         self.data = default_config
         self._write_config(path)

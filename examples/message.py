@@ -10,14 +10,16 @@ class Messages(Simulation):
     def __init__(self):
         self.message_queue = queue.Queue()
         self.config = Config()
+        self.print_lock = threading.Lock()
 
     def producer(self):
         for i in range(self.config.get('message_count', 5)):
             time.sleep(self.config.get('delay_between_messages', 2))
             self.message_queue.put(f"Message {i}")
-            print(f"{Color.GREEN}Producer: Sent message {i}{Color.RESET}")
-            print(
-                f"{Color.BLUE}Blueprint: Imagine the producer as a chef sending dishes to a kitchen window.{Color.RESET}")
+            with self.print_lock:
+                print(f"{Color.GREEN}Producer: Sent message {i}{Color.RESET}")
+                print(
+                    f"{Color.BLUE}Blueprint: Imagine the producer as a chef sending dishes to a kitchen window.{Color.RESET}")
 
     def consumer(self):
         consumed_count = 0
@@ -25,13 +27,15 @@ class Messages(Simulation):
             try:
                 message = self.message_queue.get(block=True, timeout=5)  # Wait for up to 5 seconds for a message
                 time.sleep(self.config.get('delay_between_messages', 2))
-                print(f"{Color.RED}Consumer: Received {message}{Color.RESET}")
-                print(
-                    f"{Color.BLUE}Blueprint: The consumer is like a waiter picking up dishes from the window.{Color.RESET}")
+                with self.print_lock:
+                    print(f"{Color.RED}Consumer: Received {message}{Color.RESET}")
+                    print(
+                        f"{Color.BLUE}Blueprint: The consumer is like a waiter picking up dishes from the window.{Color.RESET}")
                 self.message_queue.task_done()
                 consumed_count += 1
             except queue.Empty:
-                print(f"{Color.RED}Consumer: No message available, waiting...{Color.RESET}")
+                with self.print_lock:
+                    print(f"{Color.RED}Consumer: No message available, waiting...{Color.RESET}")
                 continue
 
     def run(self):
