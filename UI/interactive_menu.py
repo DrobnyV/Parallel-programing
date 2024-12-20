@@ -3,6 +3,8 @@ import json
 
 from config.config import Config
 from examples.message import Messages
+from examples.mp_calculation import MultiprocessingSimulation
+
 from examples.shared_memory import SharedMemory
 from color import Color
 from examples.thread_synchronization import ThreadSynchronization
@@ -16,7 +18,8 @@ class InteractiveMenu(cmd.Cmd):
         self.simulations = {
             'messages': Messages(),
             'shared_memory': SharedMemory(),
-            'thread_synchronization': ThreadSynchronization()
+            'thread_synchronization': ThreadSynchronization(),
+            'mp_array_calculation': MultiprocessingSimulation()
         }
         self.config = Config()
         if not self.config.get('use_colors', True):
@@ -24,19 +27,25 @@ class InteractiveMenu(cmd.Cmd):
             Color.GREEN = ''
             Color.BLUE = ''
             Color.RESET = ''
+            Color.YELLOW = ''
         self.active_simulation = None
 
     def do_messages(self, arg):
-        'Run or show code for the basic Messages simulation: messages [run/show]'
+        'Run or show code for the basic Messages simulation with threads: messages [run/show]'
         self._handle_command('messages', arg)
 
     def do_shared_memory(self, arg):
-        'Run or show code for the Shared Memory simulation: shared_memory [run/show]'
+        'Run or show code for the Shared Memory simulation with threads: shared_memory [run/show]'
         self._handle_command('shared_memory', arg)
 
     def do_thread_synchronization(self, arg):
-        'Run or show code for the Thread Synchronization simulation: thread_synchronization [run/show]'
+        'Run or show code for the Thread Synchronization simulation with threads: thread_synchronization [run/show]'
         self._handle_command('thread_synchronization', arg)
+
+    def do_multiprocessing(self, arg):
+        'Run or show code for multiprocessing calculation simulation: multiprocessing [run/show]'
+        self._handle_command('mp_array_calculation', arg)
+
 
     def _handle_command(self, simulation_name, arg):
         simulation = self.simulations.get(simulation_name)

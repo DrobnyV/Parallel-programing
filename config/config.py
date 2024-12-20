@@ -33,7 +33,10 @@ class Config:
             "max_threads": 10,
             "use_colors": True,
             "num_threads": 4,
-            "delay_between_stages": 1
+            "delay_between_stages": 1,
+            "array_size": 1000000,
+            "num_processes": 4,
+            "num_arrays": 100
         }
         self.data = default_config
         self._write_config(path)
