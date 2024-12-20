@@ -1,5 +1,4 @@
 import cmd
-from abc import ABC, abstractmethod
 from examples.message import Messages
 from examples.shared_memory import SharedMemory
 from color import Color
@@ -36,12 +35,12 @@ class InteractiveMenu(cmd.Cmd):
         else:
             print(f"{Color.RED}Invalid command. Use 'run' or 'show'.{Color.RESET}")
 
-    def do_exit(self):
+    def do_exit(self, arg):
         'Exit the simulation menu'
         print(f"{Color.GREEN}Exiting...{Color.RESET}")
         return True
 
-    def do_EOF(self):
+    def do_EOF(self, arg):
         'Handle end of file (Ctrl-D)'
         print(f"{Color.GREEN}Exiting...{Color.RESET}")
         return True
