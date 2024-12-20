@@ -4,6 +4,8 @@ import json
 from config.config import Config
 from examples.message import Messages
 from examples.mp_calculation import MultiprocessingSimulation
+from examples.mp_word_count import WordCountSimulation
+from examples.prime_number_cal import PrimeNumberSimulation
 
 from examples.shared_memory import SharedMemory
 from color import Color
@@ -19,7 +21,9 @@ class InteractiveMenu(cmd.Cmd):
             'messages': Messages(),
             'shared_memory': SharedMemory(),
             'thread_synchronization': ThreadSynchronization(),
-            'mp_array_calculation': MultiprocessingSimulation()
+            'mp_array_calculation': MultiprocessingSimulation(),
+            'word_count': WordCountSimulation(),
+            'prime_numbers': PrimeNumberSimulation()
         }
         self.config = Config()
         if not self.config.get('use_colors', True):
@@ -46,6 +50,13 @@ class InteractiveMenu(cmd.Cmd):
         'Run or show code for multiprocessing calculation simulation: multiprocessing [run/show]'
         self._handle_command('mp_array_calculation', arg)
 
+    def do_word_count(self, arg):
+        'Run or show code for Word Count simulation: word_count [run/show]'
+        self._handle_command('word_count', arg)
+
+    def do_prime_numbers(self, arg):
+        'Run or show code for Prime Number simulation: prime_numbers [run/show]'
+        self._handle_command('prime_numbers', arg)
 
     def _handle_command(self, simulation_name, arg):
         simulation = self.simulations.get(simulation_name)
@@ -95,7 +106,6 @@ class InteractiveMenu(cmd.Cmd):
 
     def _set_config(self, key, value):
         try:
-            # Determine the type of the current value or default to string
             current_type = type(self.config.get(key, ''))
             if current_type is bool:
                 value = value.lower() in ('true', 'yes', 'on', '1')

@@ -1,0 +1,3 @@
+In this example, we explore how Python can handle multiprocessing.
+We're not just talking about simple scripts; Python can scale to enterprise-level applications.
+With multiprocessing, you can significantly reduce the time taken for CPU-intensive tasks.

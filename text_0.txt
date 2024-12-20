@@ -1,0 +1,4 @@
+Python is an excellent language for beginners.
+It's also widely used in data science, web development, and artificial intelligence.
+Multiprocessing in Python allows for parallel execution on multiple CPU cores,
+making it an efficient choice for handling big data or complex computations.

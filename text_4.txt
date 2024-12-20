@@ -1,0 +1,3 @@
+Multiprocessing in Python isn't just for CPU-bound tasks; it's also great for I/O operations.
+For instance, you can process many files simultaneously, which is what we're doing in this example.
+Python truly shines when you need to handle both computation and data at scale.

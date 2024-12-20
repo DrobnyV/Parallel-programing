@@ -1,0 +1,4 @@
+Why choose Python for multiprocessing? Because it's easy to learn,
+yet powerful enough for advanced programming.
+The multiprocessing module in Python mimics the threading module but for processes,
+which bypasses the Global Interpreter Lock's limitations.

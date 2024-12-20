@@ -1,0 +1,3 @@
+This text is about an example of using multiprocessing in Python.
+You will find that Python's multiprocessing library can make your code run much faster
+when dealing with operations that can be run in parallel.
