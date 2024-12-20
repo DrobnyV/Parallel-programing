@@ -7,6 +7,7 @@ from examples.message import Messages
 from examples.shared_memory import SharedMemory
 
 from config.config import Config
+from examples.thread_synchronization import ThreadSynchronization
 
 
 class TestMessages(unittest.TestCase):
@@ -148,8 +149,46 @@ class TestInteractiveMenu(unittest.TestCase):
         self.assertEqual(shared_memory_sim.config.get('message_count'), 10)  # Shared config
         self.assertEqual(shared_memory_sim.config.get('delay_between_messages'), 1)
 
+    class TestThreadSynchronization(unittest.TestCase):
+        def setUp(self):
+            self.simulation = ThreadSynchronization()
+            self.simulation.config.data = {
+                "num_threads": 3,
+                "delay_between_stages": 0.1  # Shorten for testing
+            }
 
+        def test_barrier_synchronization(self):
+            with patch('builtins.print') as mock_print:
+                self.simulation.run()
+                # Check that the print statements indicate threads pass the barrier together
+                mock_print.assert_any_call("\033[92mThread-0: Starting stage 1\033[0m")
+                mock_print.assert_any_call("\033[94mThread-0: Waiting at barrier for stage 1\033[0m")
+                mock_print.assert_any_call("\033[93mThread-0: Passed barrier for stage 1\033[0m")
 
+        def test_thread_execution(self):
+            with patch('builtins.print') as mock_print:
+                self.simulation.run()
+                # Ensure each thread completes all stages
+                for thread_id in range(3):
+                    for stage in range(1, 4):
+                        mock_print.assert_any_call(f"\033[92mThread-{thread_id}: Starting stage {stage}\033[0m")
+                        mock_print.assert_any_call(
+                            f"\033[94mThread-{thread_id}: Waiting at barrier for stage {stage}\033[0m")
+                        mock_print.assert_any_call(
+                            f"\033[93mThread-{thread_id}: Passed barrier for stage {stage}\033[0m")
+
+        def test_dynamic_configuration(self):
+            # Update configuration to test dynamic behavior
+            self.simulation.config.data["num_threads"] = 2
+            self.simulation.config.data["delay_between_stages"] = 0.5
+
+            with patch('builtins.print') as mock_print:
+                self.simulation.run()
+
+            # Ensure two threads completed
+            for thread_id in range(2):
+                for stage in range(1, 4):
+                    mock_print.assert_any_call(f"\033[92mThread-{thread_id}: Starting stage {stage}\033[0m")
 
 
 if __name__ == "__main__":
