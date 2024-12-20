@@ -1,5 +1,4 @@
-from menu import Menu
+from UI.interactive_menu import InteractiveMenu
 
 if __name__ == '__main__':
-    menu = Menu()
-    menu.run()
+    InteractiveMenu().cmdloop()
