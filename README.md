@@ -8,13 +8,13 @@ Tento projekt demonstruje základy paralelního programování v Pythonu pomocí
    - Stáhněte si release z https://github.com/DrobnyV/Parallel-programing.
 
 2. **Závislosti:**
-   - **Není třeba instalovat Python**, protože `.exe` soubor už obsahuje všechny potřebné knihovny.
+   - **Je potřeba nainstalovat numpy a python**, pip install numpy, pip install python.
 
 ## Spuštění
 
 - Spusťte hlavní spustitelný soubor:
 
-main.exe
+python main.py
 
 Použití
 Po spuštění aplikace se dostanete do interaktivního menu, kde můžete:
